@@ -2,30 +2,52 @@
 // - Once form is submitted, make sure that there is not an already existing proposal 
 //   created by that user. If it is, we add to the proposal, if not, create the proposal
 // - Make "Image" proposal field so that it stores the correct image URL
-// - Compare number of votes in user file to number of 'members' from proposal
-// - Validate all input using Joi or look into validationErrors used for validation in NodeJS course
+// - Make dynamic radio buttons
+// - The ability for the user to add titles to the options when you have multiple choices
 
 const path = require('path');
-
 const express = require('express');
-const bodyParser = require('body-parser');
+const Joi = require('joi');
+const fs = require('fs')
 
-const errorController = require('./controllers/error');
+const Item = require('./models/items')
 
 const app = express();
 
-app.set('view engine', 'ejs');
-app.set('views', 'views');
-
-const addProposalRoute = require('./routes/add-proposal');
-const proposalRoutes = require('./routes/proposals');
-
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/member', addProposalRoute);
-app.use(proposalRoutes);
 
-app.use(errorController.get404);
+app.get('/shield', (req, res) => {
+    let data = JSON.parse(fs.readFileSync('data/items.json'));
+    res.send(data);
+});
+
+app.post('/shield/add', (req, res) => {
+  console.log(req.body)
+    const schema = {
+        user: Joi.string().min(3).required(),
+        title: Joi.string().min(5).required(),
+        image: Joi.string().required(),
+        description: Joi.string().min(2).max(500).required(),
+        tags: Joi.string().required(),
+        type: Joi.string().required()
+      }
+    
+      const { error } = Joi.validate(req.body, schema)
+      if (error){
+        res.status(401).send(error.details[0].message)
+        return
+      } else {
+        res.send({'status': 200})
+      }
+    
+      const item = new Item(req.body);
+      item.save();
+})
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + '/shield/index.html'));
+})
 
 app.listen(3000);

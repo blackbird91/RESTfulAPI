@@ -1,3 +1,7 @@
+#post-item {
+    display: none
+}
+
 .form-control {
     margin: 1rem 0;
 }

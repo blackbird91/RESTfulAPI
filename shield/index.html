@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/proposal.css">
+        <link rel="stylesheet" href="/css/forms.css">
+        <title>items</title>
+    </head>
+
+    <body>
+        <header class="main-header">
+            <nav class="main-header__nav">
+                <ul class="main-header__item-list">
+                    <li class="main-header__item"><a href="/">items</a></li>
+                    <li class="main-header__item"><button id="add">Add Item</button></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div id="items" class="grid">
+
+            </div>
+        </main>
+       
+
+        <form id="post-item" class="proposal-form">
+            <div class="form-control">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title">
+            </div>
+            <div class="form-control">
+                <label for="image">Image</label>
+                <input name="image" id="image" type="file" />
+            </div>
+            <div class="form-control">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" type="text"></textarea>
+            </div>
+            <div class="form-control">
+                <label for="type">Type</label>
+                <select name="type" id="type">
+                    <option value="proposal">Proposal</option>
+                    <option value="issue">Issue</option>
+                    <option value="poll">Poll</option>
+                </select>
+            </div>
+
+            <button class="btn" type="submit">Submit Proposal</button>
+        </form>
+        <script src="/js/main.js"></script>
+    </body>
+</html>
