@@ -1,4 +1,4 @@
-.proposal-form {
+.item-form {
     width: 20rem;
     max-width: 90%;
     margin: auto;
@@ -9,10 +9,10 @@
     max-width: 95%;
 }
 
-.proposal_footer {
+/* .item {
     display: flex;
     justify-content: space-around;
-}
+} */
 
 .item_title {
     font-size: 2rem;
@@ -33,4 +33,9 @@
     color: rgb(159, 158, 158);
     font-size: 0.7rem;
     text-align: center;
+}
+
+.item_footer {
+    display: flex;
+    justify-content: space-around;
 }
