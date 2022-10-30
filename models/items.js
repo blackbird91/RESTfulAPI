@@ -1,6 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
+const p = path.join(
+  path.dirname(require.main.filename),
+  'data',
+  'items.json'
+);
+
 module.exports = class Item {
   constructor(itemData) {
     this.title = itemData.title;
@@ -13,11 +19,6 @@ module.exports = class Item {
   }
 
   save() {
-    const p = path.join(
-      path.dirname(require.main.filename),
-      'data',
-      'items.json'
-    );
     fs.readFile(p, (err, fileContent) => {
       let items = [];
       if (!err) {
@@ -31,16 +32,29 @@ module.exports = class Item {
   }
 
   static fetchAll(cb) {
-    const p = path.join(
-      path.dirname(require.main.filename),
-      'data',
-      'items.json'
-    );
     fs.readFile(p, (err, fileContent) => {
       if (err) {
         cb([]);
       }
       cb(JSON.parse(fileContent));
+    });
+  }
+
+  static fetchById(itemId) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        cb([]);
+      }
+      cb(JSON.parse(fileContent));
+    });
+  }
+
+  static deleteByTitle(title) {
+    Item.fetchAll(items => {
+      const updatedItems = items.filter(item => item.title !== title);
+      fs.writeFileSync(p, JSON.stringify(updatedItems), err => {
+        console.log(err)
+      });
     });
   }
 };

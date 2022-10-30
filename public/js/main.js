@@ -1,5 +1,3 @@
-// const Item = require('../../models/items')
-
 var $ = function (selector, parent) {
     return (parent ? parent : document).querySelector(selector);
 };
@@ -14,7 +12,10 @@ let isEditing = false
 
 const user = 'decryptr';
 
+// Add items to the data array in items.json
 $('#post-item').addEventListener('submit', (event) => {
+    // If the user is NOT editing, this will check to make sure that there is not an
+    // already existing item in the items.json file
     if (!isEditing){
         fetch('/shield')
             .then(response => {
@@ -34,7 +35,7 @@ $('#post-item').addEventListener('submit', (event) => {
 
 
         event.preventDefault();
-        // here we are adding the data
+        // postData object gets filled with correct input information
         postData.user = user;
         postData.title = $('#title').value;
         postData.image = $('#image').value;
@@ -43,7 +44,8 @@ $('#post-item').addEventListener('submit', (event) => {
         postData.type = $('#type').value;
 
         let strPostData = JSON.stringify(postData);
-
+        
+        // Sends post request to /shield/add with all input information
         fetch('/shield/add', {
             method: "POST",
             headers: {
@@ -54,12 +56,15 @@ $('#post-item').addEventListener('submit', (event) => {
         }).then(response => {
             return response.json();
         }).then(returnedData => {
+            // Gets and displays all items in the items.json file (including the new one just made)
             getItems();
+            // Hides the form to add an item
             $('#post-item').style.display = 'none';
         })
     }
 });
 
+// HTML item display template that is used when getItems is called
 class HTML {
     insertHTML(data) {return `
         <article class="card item">
@@ -73,39 +78,49 @@ class HTML {
                 <h3 class="item_date" id="item_date">${data.date}</h3>
             </div>
                 <button id="${data.title}" class="edit">Edit</button>
-                <button id="delete">Delete</button>
+                <button id="${data.title}" class="delete" onclick="${deleteItem()}">Delete</button>
         </article>
         `;
     }
 }
 
+// function to get all items from items.json file
 const getItems = () => {
+    // Fetches all data from items.json
     fetch('/shield')
     .then(response => {
         return response.json();
     })
     .then(data => {
+        // Takes data from files and calls the HTML template to display the data
         $('#items').innerHTML = '';
         data.forEach(item =>{
             const html = new HTML;
             $('#items').innerHTML += html.insertHTML(item);
 
+            // EDIT FUNCTIONALITY
             $$('.edit').forEach(element => {
                 element.addEventListener('click', (event) => {
                     isEditing = true
                     $('#post-item').style.display = 'block'
+                    // get the id (title) of the clicked item
                     element.id = event.target.id;
+                    // Fetch all data once you have the correct item
                     fetch('/shield')
                         .then(response => {
                             return response.json()
                         })
                         .then(data => {
+                            // Find the item in the data
                             let correctItem = data.find(item => item.title === element.id)
+                            // Grab the edited input fields from the user
                             $('#title').value = correctItem.title
                             $('#description').value = correctItem.description
                             $('#type').value = correctItem.type
                             if (isEditing){
+                                // Listen for a edit-item submit event
                                 $('.edit-item').addEventListener('submit', (event) => {
+                                    // Change the edited items values 
                                     correctItem.id = element.id
                                     correctItem.title = $('#title').value
                                     correctItem.image = $('#image').value
@@ -113,7 +128,7 @@ const getItems = () => {
                                     correctItem.type = $('#type').value
 
                                     let strEditedItem = JSON.stringify(correctItem)
-
+                                    // Send a post request to /shield/edit with the correct/updated data
                                     fetch('/shield/edit', {
                                         method: "POST",
                                         headers: {
@@ -138,6 +153,49 @@ const getItems = () => {
 }
 getItems();
 
+const deleteItem = () => {
+       // Fetches all data from items.json
+       fetch('/shield')
+       .then(response => {
+           return response.json();
+       })
+       .then(data => {
+           data.forEach(item =>{
+               // DELETE FUNCTIONALITY
+               $$('.delete').forEach(element => {
+                   element.addEventListener('click', (event) => {
+                       // get the id (title) of the clicked item
+                       element.id = event.target.id;
+                       // Fetch all data once you have the correct item
+                       fetch('/shield')
+                           .then(response => {
+                               return response.json()
+                           })
+                           .then(data => {
+                               // Find the item in the data
+                               let correctItem = data.find(item => item.title === element.id)
+                               let strCorrectItem = JSON.stringify(correctItem)
+                               console.log(strCorrectItem)
+                               fetch('/shield/delete', {
+                                method: "delete",
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: strCorrectItem
+                                }).then(response => {
+                                    return response.json()
+                                }).then(data => {
+                                    console.log(data)
+                                }).catch(err => {
+                                    console.log(err)
+                                })
+                           })
+                   });
+               });
+           });
+       });
+}
 
 // add function
 $('#add').addEventListener('click', (event) => {

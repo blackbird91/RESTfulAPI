@@ -21,4 +21,21 @@
 
 .form-control input:focus {
     outline-color: #00695c;
+    align-items: center;
+}
+
+#transferFormContainer{
+    width: fit-content;
+    margin: 0 auto;
+}
+
+#transfer-button {
+    border: 2px solid #00695c;
+    width:fit-content;
+    border-radius: 5px;
+    margin-top: 8px;
+}
+
+#username {
+    font-weight: bold;
 }

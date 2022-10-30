@@ -33,11 +33,25 @@ main {
   margin: 0;
   padding: 0;
   display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .main-header__item {
   margin: 0 1rem;
   padding: 0;
+}
+
+#login-button {
+  border: 2px solid whitesmoke;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+#login-button:hover {
+  background-color: whitesmoke;
+  cursor: pointer;
 }
 
 .main-header__item a {

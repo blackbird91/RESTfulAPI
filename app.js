@@ -1,13 +1,3 @@
-// ToDo:
-// - Edit button, delete button
-//   -- Can now access the correct item so now all you have to do is display the edit page
-//      and then preload the data into the form for editing, then submit and show changes in
-//      the file system
-// - Read through the proton SDK docs and start messing with that within the application
-// - Make "Image" proposal field so that it stores the correct image URL
-//    -- Installed multer to handle the correct image url but need to be able to access the
-//       request in order to utilize that library
-
 const path = require('path');
 const express = require('express');
 const Joi = require('joi');
@@ -17,15 +7,20 @@ const Item = require('./models/items')
 
 const app = express();
 
+
+// express.json to decifer json data from incoming requests
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// GETs all data from items.json file 
 app.get('/shield', (req, res) => {
     let data = JSON.parse(fs.readFileSync('data/items.json'));
     res.send(data);
 });
 
+// POSTs items to the items.json file 
 app.post('/shield/add', (req, res) => {
+  // Schema = how the incoming input data is validated
   const schema = {
       user: Joi.string().min(3).required(),
       title: Joi.string().min(5).required(),
@@ -42,15 +37,20 @@ app.post('/shield/add', (req, res) => {
     } else {
       res.send({'status': 200})
     }
-  
+    // Calling imported Item model to use the save method 
+    // and save the new incoming item post request
     const item = new Item(req.body);
     item.save();
 })
 
+// EDIT items in the items.json file
 app.post('/shield/edit', (req, res) => {
+  // Grab necessary data from the incoming request body
+  const itemId = req.body.id
   const updatedTitle = req.body.title
   const updatedImage = req.body.image
   const updatedDescription = req.body.description
+  // Validate the incoming request input values with the schema
   const schema = {
       id: Joi.string().required(),
       title: Joi.string().min(5).required(),
@@ -70,16 +70,31 @@ app.post('/shield/edit', (req, res) => {
       res.send({'status': 200})
     }
 
+    // If no errors, fetch the edited item from items.json, update the 
+    // edited values and then writeFileSync the data back into the items.json file
     Item.fetchAll(items => {
-      let correctItem = items.find(item => item.title === req.body.id)
-      correctItem.title = updatedTitle
-      correctItem.image = updatedImage
-      correctItem.description = updatedDescription
+      let correctItemIndex = items.indexOf(items.find(item => item.title === itemId))
+      let data = JSON.parse(fs.readFileSync('data/items.json'));
+      data[correctItemIndex].title = updatedTitle
+      data[correctItemIndex].image = updatedImage
+      data[correctItemIndex].description = updatedDescription
+      fs.writeFileSync('data/items.json', JSON.stringify(data))
     })
 })
 
+app.delete('/shield/delete', (req, res) => {
+  const correctItem = req.body
+  Item.fetchAll(items => {
+    let filteredItems = items.filter(item => item.title !== correctItem.title)
+    let data = JSON.parse(fs.readFileSync('data/items.json'));
+    data = filteredItems
+    fs.writeFileSync('data/items.json', JSON.stringify(data))
+  })
+})
+
+// GETs the main homepage where all items are displayed from the index.js file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/shield/index.html'));
+  res.sendFile(path.join(__dirname + '/shield/index.html'));
 })
 
 app.listen(3000);
