@@ -1,3 +1,4 @@
+
 let link = undefined;
 let session = undefined;
 let accountData = undefined;
@@ -5,7 +6,6 @@ let accountData = undefined;
 const appIdentifier = "Shield Login"
 const chainId = "384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0"
 const endpoints = ["https://proton.greymass.com"]
-const tokenContract = 'grat'
 
 const loginButton = document.querySelector('#login-button')
 const avatar = document.querySelector('#avatar')
@@ -17,61 +17,67 @@ const logoutIcon = document.querySelector('#logout-button')
 const transferFormContainer = document.querySelector('#transferFormContainer')
 const transferButton = document.querySelector('#transfer-button')
 
+const userId = 'decryptr'
+const contractName = 'grat'
+const token = 'GRAT'
+
 // Status is updated once a user is logged in
 const updateStatus = () => {
-    // Session and session.auth are automatically returned when a user logs in
-    // here we use that to determing what UI we display
-    if (session && session.auth) {
-        avatarName.textContent = session.auth.actor.toString()
-        username.textContent = session.auth.actor.toString()
-        loginButton.style.display = "none"
-        avatar.style.display = "block"
-        transferFormContainer.style.display = "block"
-    } else {
-        avatarName.textContent = ""
-        loginButton.style.display = "block"
-        avatar.style.display = "none"
-        logoutIcon.style.display = "none"
-        transferFormContainer.style.display = "none"
-    }
+
+  // Session and session.auth are automatically returned when a user logs in
+  // here we use that to determing what UI we display
+  if (session && session.auth) {
+      avatarName.textContent = session.auth.actor.toString()
+      username.textContent = session.auth.actor.toString()
+      loginButton.style.display = "none"
+      avatar.style.display = "block"
+      logoutIcon.style.display = "block"
+      transferFormContainer.style.display = "block"
+  } else {
+      avatarName.textContent = ""
+      loginButton.style.display = "block"
+      avatar.style.display = "none"
+      logoutIcon.style.display = "none"
+      transferFormContainer.style.display = "none"
+  }
 }
 
 // Login in function that is called when the login button is clicked
 const login = async (restoreSession) => {
-    const { link: localLink, session: localSession } = await ProtonWebSDK({
-    
-    // linkOptions is a required part of logging in with the protonWebSDK(), within
-    // the options, you must have the chain API endpoint array, a chainID that matches the chain your API 
-    // endpoint is on, and restoreSession option that is passed to determine if there is 
-    // an existing session that needs to be saved or if a new session needs to be created.
-    linkOptions: {
-        endpoints,
-        chainId,
-        restoreSession,
-    },
-    // The account that is requesting the transaction with the client
-    transportOptions: {
-        requestAccount: appIdentifier
-    },
-    // This is the wallet selector style options available
-    selectorOptions: {
-        appName: "Shield",
-        appLogo: "https://taskly.protonchain.com/static/media/taskly-logo.ad0bfb0f.svg",
-        customStyleOptions: {
-            modalBackgroundColor: "#F4F7FA",
-            logoBackgroundColor: "white",
-            isLogoRound: true,
-            optionBackgroundColor: "white",
-            optionFontColor: "black",
-            primaryFontColor: "black",
-            secondaryFontColor: "#6B727F",
-            linkColor: "#752EEB"
-        }
-    }
+  const { link: localLink, session: localSession } = await ProtonWebSDK({
+  // linkOptions is a required part of logging in with the protonWebSDK(), within
+  // the options, you must have the chain API endpoint array, a chainID that matches the chain your API 
+  // endpoint is on, and restoreSession option that is passed to determine if there is 
+  // an existing session that needs to be saved or if a new session needs to be created.
+  linkOptions: {
+      endpoints,
+      chainId,
+      restoreSession,
+  },
+  // The account that is requesting the transaction with the client
+  transportOptions: {
+      requestAccount: appIdentifier
+  },
+  // This is the wallet selector style options available
+  selectorOptions: {
+      appName: "Shield",
+      appLogo: "https://taskly.protonchain.com/static/media/taskly-logo.ad0bfb0f.svg",
+      customStyleOptions: {
+          modalBackgroundColor: "#F4F7FA",
+          logoBackgroundColor: "white",
+          isLogoRound: true,
+          optionBackgroundColor: "white",
+          optionFontColor: "black",
+          primaryFontColor: "black",
+          secondaryFontColor: "#6B727F",
+          linkColor: "#752EEB"
+      }
+  }
 })
 
 link = localLink
 session = localSession
+console.log(link, session)
 
 updateStatus()
 }

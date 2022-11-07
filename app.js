@@ -35,7 +35,7 @@ app.post('/shield/add', (req, res) => {
       res.status(401).send(error.details[0].message)
       return
     } else {
-      res.send({'status': 200})
+      res.send({ "status": 200 })
     }
     // Calling imported Item model to use the save method 
     // and save the new incoming item post request
@@ -52,24 +52,21 @@ app.post('/shield/edit', (req, res) => {
   const updatedDescription = req.body.description
   // Validate the incoming request input values with the schema
   const schema = {
-      id: Joi.string().required(),
-      title: Joi.string().min(5).required(),
-      image: Joi.string().required(),
-      description: Joi.string().min(2).max(500).required(),
-      type: Joi.string().required(),
-      date: Joi.string(),
-      tags: Joi.string(),
-      votes: Joi.array(),
-      members: Joi.number(),
-    }
+    id: Joi.string().required(),
+    title: Joi.string().min(5).required(),
+    image: Joi.string().required(),
+    description: Joi.string().min(2).max(500).required(),
+    type: Joi.string().required(),
+    date: Joi.string(),
+    tags: Joi.string(),
+    votes: Joi.array(),
+    members: Joi.number(),
+  }
   
-    const { error } = Joi.validate(req.body, schema)
-    if (error){
-      return res.status(401).send(error)
-    } else {
-      res.send({'status': 200})
-    }
-
+  const { error } = Joi.validate(req.body, schema)
+  if (error){
+    return res.status(401).send(error)
+  } else {
     // If no errors, fetch the edited item from items.json, update the 
     // edited values and then writeFileSync the data back into the items.json file
     Item.fetchAll(items => {
@@ -80,9 +77,11 @@ app.post('/shield/edit', (req, res) => {
       data[correctItemIndex].description = updatedDescription
       fs.writeFileSync('data/items.json', JSON.stringify(data))
     })
+  }
+  res.send({ "status": 200 })
 })
 
-app.delete('/shield/delete', (req, res) => {
+app.put('/shield/delete', (req, res) => {
   const correctItem = req.body
   Item.fetchAll(items => {
     let filteredItems = items.filter(item => item.title !== correctItem.title)
@@ -90,6 +89,7 @@ app.delete('/shield/delete', (req, res) => {
     data = filteredItems
     fs.writeFileSync('data/items.json', JSON.stringify(data))
   })
+  res.send({ "status": 200 })
 })
 
 // GETs the main homepage where all items are displayed from the index.js file
