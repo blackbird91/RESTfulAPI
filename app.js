@@ -1,9 +1,9 @@
 const path = require('path');
 const express = require('express');
 const Joi = require('joi');
-const fs = require('fs')
+const fs = require('fs');
 
-const Item = require('./models/items')
+//const Item = require('./models/items');
 
 const app = express();
 
@@ -13,38 +13,40 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // GETs all data from items.json file 
-app.get('/shield', (req, res) => {
-    let data = JSON.parse(fs.readFileSync('data/items.json'));
-    res.send(data);
+app.get('/items', (req, res) => {
+  let data = JSON.parse(fs.readFileSync('data/items.json'));
+  res.send(data);
 });
 
-// POSTs items to the items.json file 
-app.post('/shield/add', (req, res) => {
+// POSTs items to the items.json file
+// IF THERE IS NO AUTHENTICATED VISIONARY TYPE USER THE ADD BUTTON WILL NOT BE SHOWN !!!!!!!!!!!!!!!!
+app.post('/post', (req, res) => {
   // Schema = how the incoming input data is validated
   const schema = {
-      user: Joi.string().min(3).required(),
-      title: Joi.string().min(5).required(),
-      image: Joi.string().required(),
-      description: Joi.string().min(2).max(500).required(),
-      tags: Joi.string().required(),
-      type: Joi.string().required()
-    }
-  
-    const { error } = Joi.validate(req.body, schema)
-    if (error){
-      res.status(401).send(error.details[0].message)
-      return
-    } else {
-      res.send({ "status": 200 })
-    }
-    // Calling imported Item model to use the save method 
-    // and save the new incoming item post request
-    const item = new Item(req.body);
-    item.save();
+    user: Joi.string().min(3).required(),
+    title: Joi.string().min(5).required(),
+    image: Joi.string().required(),
+    description: Joi.string().min(2).max(500).required(),
+    tags: Joi.string().required(),
+    type: Joi.string().required()
+  }
+
+  const { error } = Joi.validate(req.body, schema)
+  if (error) {
+    res.status(401).send(error.details[0].message)
+    return
+  } else {
+    res.send({ "status": 200 })
+  }
+  // Calling imported Item model to use the save method 
+  // and save the new incoming item post request
+  const item = new Item(req.body);
+  item.save();
 })
 
 // EDIT items in the items.json file
-app.post('/shield/edit', (req, res) => {
+// HERE WE HAVE TO CHECK IF THE USER THAT MADE THE POST IS AUTHENTICATED !!!!!!!!!!!!!!!!
+app.post('/edit', (req, res) => {
   // Grab necessary data from the incoming request body
   const itemId = req.body.id
   const updatedTitle = req.body.title
@@ -62,9 +64,9 @@ app.post('/shield/edit', (req, res) => {
     votes: Joi.array(),
     members: Joi.number(),
   }
-  
+
   const { error } = Joi.validate(req.body, schema)
-  if (error){
+  if (error) {
     return res.status(401).send(error)
   } else {
     // If no errors, fetch the edited item from items.json, update the 
@@ -81,7 +83,8 @@ app.post('/shield/edit', (req, res) => {
   res.send({ "status": 200 })
 })
 
-app.put('/shield/delete', (req, res) => {
+// HERE WE HAVE TO CHECK IF THE USER THAT MADE THE POST IS AUTHENTICATED !!!!!!!!!!!!!!!!
+app.put('/delete', (req, res) => {
   const correctItem = req.body
   Item.fetchAll(items => {
     let filteredItems = items.filter(item => item.title !== correctItem.title)
@@ -93,8 +96,8 @@ app.put('/shield/delete', (req, res) => {
 })
 
 // GETs the main homepage where all items are displayed from the index.js file
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/shield/index.html'));
-})
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(__dirname + '/index.html'));
+// })
 
-app.listen(3000);
+app.listen(3333);

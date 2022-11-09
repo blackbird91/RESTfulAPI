@@ -1,41 +1,98 @@
-.item-form {
-    width: 20rem;
-    max-width: 90%;
-    margin: auto;
+#items {
+    padding: 15px 0
 }
 
 .item {
-    width: 20rem;
-    max-width: 95%;
-}
-
-/* .item {
+    width: 100%;
+    margin: 0 0 23px 0;
     display: flex;
-    justify-content: space-around;
-} */
-
-.item_title {
-    font-size: 2rem;
-    text-align: center;
+    align-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
-.item_date,
-.item_votes {
-    font-size: 0.8rem;
-    color: #4d4d4d;
-}
-
-.item_description {
-    text-align: center;
-    font-size: 1rem;
-}
-.item_tags {
-    color: rgb(159, 158, 158);
-    font-size: 0.7rem;
-    text-align: center;
-}
-
-.item_footer {
+.flex {
     display: flex;
-    justify-content: space-around;
+    align-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.image-anchor {
+    display: block;
+    text-decoration: none;
+}
+
+.title {
+    margin-top: 6px
+}
+
+.item-type {
+    border: 1px solid #0274f9;
+    margin-right: 6px;
+    border-radius: 3px;
+    display: inline-block;
+    color: #0274f9;
+    font-size: 14px;
+    padding: 6px 12px;
+    vertical-align: top;
+    text-transform: uppercase;
+}
+
+.issue.item-type {
+    border-color: #f90202;
+    color: #f90202
+}
+
+.poll.item-type {
+    border-color: #00cf1c;
+    color: #00cf1c
+}
+
+.item .image {
+    max-height: 230px;
+}
+
+.user_info {
+    margin-top: 10px;
+    color: gray
+}
+
+.content {
+    text-align: left;
+    padding-left: 15px
+}
+
+.tag {
+    margin: 0 6px 0 0;
+    text-decoration: none;
+}
+
+.tag:hover {
+    text-decoration: underline;
+}
+
+.item button {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: 0;
+}
+
+.item .delete {
+    background: url(/svgs/trash.svg) no-repeat 50% 50% #ffffff;
+    background-size: 32px 32px
+}
+
+.item .edit {
+    background: url(/svgs/edit.svg) no-repeat 50% 50% #ffffff;
+    background-size: 32px 32px
+}
+
+.stats {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    min-width: 230px;
 }
