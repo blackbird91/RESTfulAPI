@@ -13,13 +13,17 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // GETs all data from items.json file 
-app.get('/items', (req, res) => {
+app.get('/items/:post/:tag', (req, res) => {
+  if (req.params.post) {
+
+  }
+
   let data = JSON.parse(fs.readFileSync('data/items.json'));
   res.send(data);
 });
 
 // POSTs items to the items.json file
-// IF THERE IS NO AUTHENTICATED VISIONARY TYPE USER THE ADD BUTTON WILL NOT BE SHOWN !!!!!!!!!!!!!!!!
+// IF THERE IS NO AUTHENTICATED USER THE ADD BUTTON WILL NOT BE SHOWN !!!!!!!!!!!!!!!!
 app.post('/post', (req, res) => {
   // Schema = how the incoming input data is validated
   const schema = {
@@ -55,6 +59,7 @@ app.post('/edit', (req, res) => {
   // Validate the incoming request input values with the schema
   const schema = {
     id: Joi.string().required(),
+    user: Joi.string().min(6).max(12).alphanum().required(),
     title: Joi.string().min(5).required(),
     image: Joi.string().required(),
     description: Joi.string().min(2).max(500).required(),

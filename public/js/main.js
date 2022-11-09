@@ -97,7 +97,7 @@ class HTML {
                                         <span class="user_info">
                         [ avatar ] @username | <span class="date" id="date">` + formatDate(data.date) + `</span>
                     </span>
-                    <h2 class="title">${data.title}</h2>
+                    <a href=""><h2 class="title">${data.title}</h2></a>
 
                     <p class="description">${data.description}</p>
                     <div class="tags"><b>Tags:</b> ${linkTags}</div>

@@ -9,6 +9,7 @@ const p = path.join(
 
 module.exports = class Item {
   constructor(itemData) {
+    this.user = itemData.user;
     this.title = itemData.title;
     this.image = itemData.image;
     this.description = itemData.description;
