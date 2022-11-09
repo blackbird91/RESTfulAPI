@@ -11,18 +11,19 @@
   "author": "Cade Robinson",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.18.3"
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "@proton/api": "^27.1.2",
     "@proton/js": "^27.3.0",
     "@proton/web-sdk": "^4.2.7",
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.8",
     "express": "^4.16.3",
-    "express-handlebars": "^3.0.0",
+    "express-handlebars": "^6.0.6",
     "joi": "^13.1.0",
     "node-fetch": "^3.2.10",
     "path": "^0.12.7",
-    "pug": "^2.0.3"
+    "pug": "^3.0.2",
+    "svgo": "^3.0.0"
   }
 }

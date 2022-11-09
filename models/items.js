@@ -14,7 +14,8 @@ module.exports = class Item {
     this.description = itemData.description;
     this.date = new Date();
     this.tags = 'tag1, tag2';
-    this.votes = [1,3];
+    this.type = itemData.type;
+    this.votes = [1, 3];
     this.members = 10;
   }
 

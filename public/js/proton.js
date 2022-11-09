@@ -27,114 +27,114 @@ const updateStatus = () => {
   // Session and session.auth are automatically returned when a user logs in
   // here we use that to determing what UI we display
   if (session && session.auth) {
-      avatarName.textContent = session.auth.actor.toString()
-      username.textContent = session.auth.actor.toString()
-      loginButton.style.display = "none"
-      avatar.style.display = "block"
-      logoutIcon.style.display = "block"
-      transferFormContainer.style.display = "block"
+    avatarName.textContent = session.auth.actor.toString()
+    username.textContent = session.auth.actor.toString()
+    loginButton.style.display = "none"
+    avatar.style.display = "block"
+    logoutIcon.style.display = "block"
+    transferFormContainer.style.display = "block"
   } else {
-      avatarName.textContent = ""
-      loginButton.style.display = "block"
-      avatar.style.display = "none"
-      logoutIcon.style.display = "none"
-      transferFormContainer.style.display = "none"
+    avatarName.textContent = ""
+    loginButton.style.display = "block"
+    avatar.style.display = "none"
+    logoutIcon.style.display = "none"
+    transferFormContainer.style.display = "none"
   }
 }
 
 // Login in function that is called when the login button is clicked
 const login = async (restoreSession) => {
   const { link: localLink, session: localSession } = await ProtonWebSDK({
-  // linkOptions is a required part of logging in with the protonWebSDK(), within
-  // the options, you must have the chain API endpoint array, a chainID that matches the chain your API 
-  // endpoint is on, and restoreSession option that is passed to determine if there is 
-  // an existing session that needs to be saved or if a new session needs to be created.
-  linkOptions: {
+    // linkOptions is a required part of logging in with the protonWebSDK(), within
+    // the options, you must have the chain API endpoint array, a chainID that matches the chain your API 
+    // endpoint is on, and restoreSession option that is passed to determine if there is 
+    // an existing session that needs to be saved or if a new session needs to be created.
+    linkOptions: {
       endpoints,
       chainId,
       restoreSession,
-  },
-  // The account that is requesting the transaction with the client
-  transportOptions: {
+    },
+    // The account that is requesting the transaction with the client
+    transportOptions: {
       requestAccount: appIdentifier
-  },
-  // This is the wallet selector style options available
-  selectorOptions: {
+    },
+    // This is the wallet selector style options available
+    selectorOptions: {
       appName: "Shield",
-      appLogo: "https://taskly.protonchain.com/static/media/taskly-logo.ad0bfb0f.svg",
+      appLogo: "/svgs/SHIELD-logo.svg",
       customStyleOptions: {
-          modalBackgroundColor: "#F4F7FA",
-          logoBackgroundColor: "white",
-          isLogoRound: true,
-          optionBackgroundColor: "white",
-          optionFontColor: "black",
-          primaryFontColor: "black",
-          secondaryFontColor: "#6B727F",
-          linkColor: "#752EEB"
+        modalBackgroundColor: "#F4F7FA",
+        logoBackgroundColor: "white",
+        isLogoRound: true,
+        optionBackgroundColor: "white",
+        optionFontColor: "black",
+        primaryFontColor: "black",
+        secondaryFontColor: "#6B727F",
+        linkColor: "#752EEB"
       }
-  }
-})
+    }
+  })
 
-link = localLink
-session = localSession
-console.log(link, session)
+  link = localLink
+  session = localSession
+  console.log(link, session)
 
-updateStatus()
+  updateStatus()
 }
 
 // Logout function sets the link and session back to original state of undefined
 const logout = async () => {
-    if (link && session) {
-        await link.removeSession(appIdentifier, session.auth, chainId);
-    }
-    session = undefined;
-    link = undefined;
+  if (link && session) {
+    await link.removeSession(appIdentifier, session.auth, chainId);
+  }
+  session = undefined;
+  link = undefined;
 
-    updateStatus()
+  updateStatus()
 }
 
 // Transfer functionality
 const transfer = async ({ to, amount }) => {
-    if (!session) {
-      throw new Error('No Session');
-    }
+  if (!session) {
+    throw new Error('No Session');
+  }
 
-    return await session.transact({
-      actions: [{
+  return await session.transact({
+    actions: [{
 
-        // Token contract
-        account: "grat",
+      // Token contract
+      account: "grat",
 
-        // Action name
-        name: "transfer",
-        
-        // Action parameters
-        data: {
-          // Sender
-          from: session.auth.actor,
+      // Action name
+      name: "transfer",
 
-          // Receiver
-          to: to,
+      // Action parameters
+      data: {
+        // Sender
+        from: session.auth.actor,
 
-          // 8 is precision (how many decimals places the token allows), GRAT is symbol
-          quantity: `${(+amount).toFixed(8)} GRAT`,
+        // Receiver
+        to: to,
 
-          // Optional memo
-          memo: "Testing transactions from the API"
-        },
-        authorization: [session.auth]
-      }]
-    }, {
-      broadcast: true
-    })
+        // 8 is precision (how many decimals places the token allows), GRAT is symbol
+        quantity: `${(+amount).toFixed(8)} GRAT`,
+
+        // Optional memo
+        memo: "Testing transactions from the API"
+      },
+      authorization: [session.auth]
+    }]
+  }, {
+    broadcast: true
+  })
 }
 
-  // Add button listeners
+// Add button listeners
 logoutIcon.addEventListener("click", logout)
 loginButton.addEventListener("click", () => login(false))
 transferButton.addEventListener("click", () => transfer({
-to: toInput.value,
-amount: amountInput.value,
+  to: toInput.value,
+  amount: amountInput.value,
 }))
 
 // Restore
