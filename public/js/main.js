@@ -1,28 +1,78 @@
 import { $, $$ } from '/js/selectors.js';
-import { formatDate } from '/js/date-formatting.js';
+import { HTML } from '/js/item-template.js';
+import { user } from '/js/proton.js';
+import { url } from '/js/proton.js';
+import { makeChart } from '/js/chart.js';
 
 // here we will add all user input data
 let postData = {}
-let isEditing = false
+let isEditing = false;
 let fetchedItems = new Object();
+let postType;
+let allPollOptions = []
 
-const user = 'decryptr';
 
-const url = 'http://127.0.0.1:3333';
 let fetchURL = url + '/items';
 
 $('#add').addEventListener('click', (event) => {
     $('#post-item-container').style.display = 'flex';
     $('#close').style.display = 'block';
+    $('body').style.overflow = 'hidden';
 });
 
 $('#close').addEventListener('click', (event) => {
     $('#post-item-container').style.display = 'none';
+    $('body').style.overflow = '';
+});
+
+$('#add_option').addEventListener('click', (event) => {
+    event.preventDefault();
+    if ($$('.voteInput').length < 9) {
+        $('.options').innerHTML += '<input class="voteInput" type="text" required />';
+        $('#remove_option').style = 'display: inline-block !important';
+    } else { alert('Maximum number of options is 9.') }
+});
+
+$('#remove_option').addEventListener('click', (event) => {
+    event.preventDefault();
+    if ($$('.voteInput').length === 3) {
+        $('.voteInput:last-of-type').remove();
+        event.target.style = 'display: none !important';
+    }
+    if ($$('.voteInput').length > 2) {
+        $('.voteInput:last-of-type').remove();
+    }
+});
+
+$('#post-item').addEventListener('change', (event) => {
+    postType = $('input[name="type"]:checked').value;
+    allPollOptions = [];
+    $$('.voteInput').forEach((el, i) => {
+        allPollOptions.push(el.value);
+    });
+    if ($('input[name="type"]:checked').value === 'poll') {
+        $('#description-container').style.display = 'none';
+        $('#description').required = false;
+        $('.options').style = '';
+        $('#add-remove-inputs').style = 'display: block';
+        $$('.voteInput').forEach((el, i) => {
+            el.required = true;
+        });
+    } else {
+        $('#description-container').style.display = 'block';
+        $('#description').required = true;
+        $('.options').style = 'display: none';
+        $('#add-remove-inputs').style = '';
+        $$('.voteInput').forEach((el, i) => {
+            el.required = false;
+        });
+    }
 });
 
 // Add items to the data array in items.json
 $('#post-item').addEventListener('submit', (event) => {
     event.preventDefault();
+    postData = {}
     // If the user is NOT editing, this will check to make sure that there is NOT an
     // already existing item in the items.json file
     if (!isEditing) {
@@ -41,15 +91,22 @@ $('#post-item').addEventListener('submit', (event) => {
                 console.log(err)
             })
 
+        // get the number of options added and push 0 for each of them to the votes array
+        let votes = [];
+        const voteInputsNr = $$('.voteInput').length;
+        for (let i = 0; i < voteInputsNr; i++) {
+            votes.push(0);
+        }
 
         // postData object gets filled with correct input information
         postData.user = user;
         postData.title = $('#title').value;
         postData.image = $('#image').value;
-        postData.description = $('#description').value;
+        postType === 'poll' ? postData.description = allPollOptions : postData.description = $('#description').value
         postData.tags = 'tag1, tag5';
         postData.type = $('input[name="type"]:checked').value;
-
+        postData.votes = votes;
+        console.log(postData);
         let strPostData = JSON.stringify(postData);
 
         // Sends post request to /post with all input information
@@ -69,51 +126,14 @@ $('#post-item').addEventListener('submit', (event) => {
 
                 // Hides the form to add an item
                 $('#post-item-container').style.display = 'none';
-                $('.close').style.display = 'none';
+                $('#close').style.display = 'none';
+                $('body').style.overflow = '';
             }
 
         })
     }
 });
 
-// HTML item display template that is used when getItems is called
-class HTML {
-    insertHTML(data) {
-        const tags = data.tags.split(" ");
-
-        let linkTags = '';
-
-        tags.forEach(item => {
-            linkTags += '<a class="tag" href="' + url + '/?tag=' + item + '">#' + item + '</a>';
-        });
-
-        return `
-        <article class="item id="${data.title}">
-            <div class="flex">
-                <a class="image-anchor" href="${data.image}" target="_blank"><img class="image" src="/img/love-technology.jpg" alt="${data.title}"></a>
-
-                <div class="content">
-                    <span class="${data.type} item-type">${data.type}</span>
-                                        <span class="user_info">
-                        [ avatar ] @username | <span class="date" id="date">` + formatDate(data.date) + `</span>
-                    </span>
-                    <a href=""><h2 class="title">${data.title}</h2></a>
-
-                    <p class="description">${data.description}</p>
-                    <div class="tags"><b>Tags:</b> ${linkTags}</div>
-                </div>
-
-                <div class="stats">
-                    <span class="votes" id="votes">${data.votes}</span>
-
-                    <button id="${data.title}" class="edit"></button>
-                    <button id="${data.title}" class="delete"></button>
-                </div>
-            </div>
-        </article>
-        `;
-    }
-}
 
 // // function to get all items from items.json file
 const getItems = () => {
@@ -130,6 +150,7 @@ const getItems = () => {
             data.forEach(item => {
                 const html = new HTML;
                 $('#items').innerHTML += html.insertHTML(item);
+                makeChart(data);
 
                 // EDIT FUNCTIONALITY
                 $$('.edit').forEach(element => {
@@ -154,46 +175,56 @@ const getItems = () => {
 
 getItems();
 
-const editItems = (elementId) => {
-    // Fetch all data once you have the correct item
-
-    // Find the item in the data
-    let correctItem = fetchedItems.find(item => item.title === elementId)
-    // Grab the edited input fields from the user
-    correctItem.title = $('#title').value;
-    correctItem.description = $('#description').value;
-    correctItem.type = $('input[name="type"]:checked').value;
-    if (isEditing) {
-        // Listen for a edit-item submit event
-        $('.edit-item').addEventListener('submit', (event) => {
-            // Change the edited items values 
-            correctItem.id = elementId;
-            correctItem.title = $('#title').value;
-            correctItem.image = $('#image').value;
-            correctItem.description = $('#description').value;
-            correctItem.type = $('#type').value;
-
-            let strEditedItem = JSON.stringify(correctItem)
-            // Send a post request to /edit with the correct/updated data
-            fetch(url + '/edit', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: strEditedItem
-            }).then(response => {
-                return response.json();
-            })
-                .then(data => {
-                    console.log(data.status === 200);
-                })
-                .catch(err => {
-                    console.log('editItem error', err);
-                })
+const vote = () => {
+    $$('#voting input').forEach(element => {
+        element.addEventListener('click', (event) => {
+            console.log(event.target)
         });
-    }
+    });
 }
+
+vote();
+
+// const editItems = (elementId) => {
+//     // Fetch all data once you have the correct item
+
+//     // Find the item in the data
+//     let correctItem = fetchedItems.find(item => item.title === elementId)
+//     // Grab the edited input fields from the user
+//     correctItem.title = $('#title').value;
+//     correctItem.description = $('#description').value;
+//     correctItem.type = $('input[name="type"]:checked').value;
+//     if (isEditing) {
+//         // Listen for a edit-item submit event
+//         $('.edit-item').addEventListener('submit', (event) => {
+//             // Change the edited items values 
+//             correctItem.id = elementId;
+//             correctItem.title = $('#title').value;
+//             correctItem.image = $('#image').value;
+//             correctItem.description = $('#description').value;
+//             correctItem.type = $('#type').value;
+
+//             let strEditedItem = JSON.stringify(correctItem)
+//             // Send a post request to /edit with the correct/updated data
+//             fetch(url + '/edit', {
+//                 method: "POST",
+//                 headers: {
+//                     'Accept': 'application/json',
+//                     'Content-Type': 'application/json'
+//                 },
+//                 body: strEditedItem
+//             }).then(response => {
+//                 return response.json();
+//             })
+//                 .then(data => {
+//                     console.log(data.status === 200);
+//                 })
+//                 .catch(err => {
+//                     console.log('editItem error', err);
+//                 })
+//         });
+//     }
+// }
 
 const deleteItem = (itemTitle) => {
     // Fetches all data from items.json

@@ -60,6 +60,7 @@
     <BiiP></BiiP>
     <header id="main_header">
         <a class="logo" href="/shield">SHIELD</a>
+        <button id="login">BiiP</button>
         <nav id="nav"><button id="add">+</button></nav>
         <!-- <div id="login-button">Login</div>
         <div id="avatar">
@@ -95,12 +96,9 @@
                     <label id="image-label" for="image">Image</label>
                     <input name="image" id="image" type="file" required />
                 </div>
-                <label for="description">Description</label>
-                <textarea name="description" id="description" type="text" required></textarea>
 
-
-                <div class="radios">
-                    <span class="label">Type: </span>
+                <div id="types" class="radios">
+                    <span class="label">Post type: </span>
                     <input name="type" id="proposal" type="radio" value="proposal" checked />
                     <label for="proposal">Proposal</label>
 
@@ -109,7 +107,23 @@
 
                     <input name="type" id="poll" type="radio" value="poll" />
                     <label for="poll">Poll</label>
+                </div>
 
+                <div id="description-container">
+                    <label for="description">Description</label>
+                    <textarea id="description" type="text" required></textarea>
+                </div>
+
+                <div id="options">
+                    <div class="options" style="display: none">
+                        <span class="label">Options: </span>
+                        <input class="voteInput" type="text" />
+                        <input class="voteInput" type="text" />
+                    </div>
+                    <div id="add-remove-inputs">
+                        <button id="add_option" class="form-btn"> + </button>
+                        <button id="remove_option" class="form-btn" style="display: none !important"> - </button>
+                    </div>
                 </div>
 
                 <button class="btn" type="submit">Submit</button>
@@ -145,13 +159,14 @@
                 <div id="transfer-button">Transfer</div>
             </div>
         </div>
-        <script type="module" src="/js/main.js"></script>
-        <!-- <script type="module" src="/js/proton.js"></script> -->
+
+        <footer>© Powered by <a href="https://shield.gratitudetoken.world" target="_blank">SHIELD</a></footer>
     </div>
 
-    <!-- <script src="/modules/handlebars.runtime.min.js"></script>
-    <script src="/localisation/shield/template.js"></script> -->
-    <script src="https://unpkg.com/@proton/web-sdk@4.2.7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <!-- <script type="module" src="/js/proton.js"></script>
+    <script src="https://unpkg.com/@proton/web-sdk@4.2.7"></script>-->
 
     <!-- << Shared HTML: Start >> -->
 

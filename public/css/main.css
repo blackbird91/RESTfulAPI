@@ -102,7 +102,7 @@ h5 {
   display: flex;
   align-content: center;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   z-index: 7;
   pointer-events: none;
 }
@@ -114,16 +114,12 @@ h5 {
 .logo,
 .logo:visited {
   text-align: left;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 9;
   white-space: nowrap;
   text-decoration: none;
   font-weight: bold;
   line-height: 62px;
   text-transform: capitalize;
-  color: #000000
+  color: #012453
 }
 
 .logo:before {
@@ -142,7 +138,7 @@ h5 {
   width: 32px;
   height: 32px;
   top: 15px;
-  right: 15px;
+  right: 32px;
   transition: 0.3s all ease-in-out;
   cursor: pointer
 }
@@ -173,7 +169,6 @@ button {
 }
 
 #nav {
-  width: 100%;
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
@@ -205,4 +200,9 @@ button {
 
 #nav a svg {
   fill: #0274f9
+}
+
+footer {
+  text-align: left;
+  padding: 23px 0
 }
