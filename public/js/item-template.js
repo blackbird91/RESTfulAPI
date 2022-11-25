@@ -9,12 +9,13 @@ export class HTML {
         let linkTitle = data.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         linkTitle = url + '/?' + data.type + '=' + linkTitle;
 
-        let pollList = '';
+        let pollHTML = '';
+        const options = data.options;
 
-        data.options.forEach((item, i) => {
-            pollList += '<li><input id="' + data.id + '-option-' + i + '" type="radio" name="post-' + data.id + '-options" value="' + i + '"/> <label for="' + data.id + '-option-' + i + '">' + item + '</label></li>';
+        options && options.forEach((item, i) => {
+            pollHTML += '<li><input id="' + data.id + '-option-' + i + '" type="radio" name="post-' + data.id + '-options" value="' + i + '"/> <label for="' + data.id + '-option-' + i + '">' + item + '</label></li>';
         });
-        pollList = '<ol>' + pollList + '</ol>';
+        pollHTML = '<ol>' + pollHTML + '</ol>';
 
 
         // tags
@@ -23,21 +24,6 @@ export class HTML {
         tags.forEach(item => {
             tagsString += '<a class="tag ' + data.type + '" href="' + url + '/?tag=' + item + '">#' + item + '</a>';
         });
-
-        // votes and voting
-        // let buttonsContainer = '';
-
-        // if (data.votes.length === 2) {
-        //     buttonsContainer = `
-        //         <div class="flex-column"><span>${data.votes[0]}</span><input id="for" type="button" value="For"/></div>
-        //         <div class="flex-column"><span>${data.votes[1]}</span><input id="against" type="button" value="Against"/></div>
-        //         `;
-        // } else {
-        //     data.votes.forEach((item, index) => {
-        //         buttonsContainer += `
-        //         <div class="flex-column" style="height: `+ item * 23 + `px; max-height: 200px"><span>${item}</span><input id="for" type="button" value="${index + 1}"/></div>`;
-        //     });
-        // }
 
         return `
         <article class="item" id="post-${data.id}">
@@ -54,7 +40,7 @@ export class HTML {
                             </span>
                         </div>
                         <a class="title ${data.type}" href="${linkTitle}"><h2>${data.title}</h2></a>
-                        <div class="description"><p>${data.description}</p> ${pollList}</div>
+                        <div class="description"><p>${data.description}</p> ${pollHTML}</div>
                         <div class="tags ${data.type}"><b>Tags:</b> ${tagsString}</div>
                     </div>
                 </div>

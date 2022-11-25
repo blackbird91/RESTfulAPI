@@ -80,6 +80,7 @@ $('#post-item').addEventListener('change', (event) => {
         $('#add-remove-inputs').style = 'display: block';
         $$('.voteInput').forEach((el, i) => {
             el.required = true;
+            el.placeholder = '';
         });
     } else {
         $('#description-container').style.display = 'block';
@@ -88,6 +89,7 @@ $('#post-item').addEventListener('change', (event) => {
         $('#add-remove-inputs').style = '';
         $$('.voteInput').forEach((el, i) => {
             el.required = false;
+            i === 0 ? el.placeholder = 'Yes' : el.placeholder = 'No';
         });
     }
 
