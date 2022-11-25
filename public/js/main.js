@@ -30,6 +30,8 @@ $('#add_option').addEventListener('click', (event) => {
     if ($$('.voteInput').length < 9) {
         $('.options').innerHTML += '<input class="voteInput" type="text" required />';
         $('#remove_option').style = 'display: inline-block !important';
+        $('.voteInput:first-of-type').placeholder = '';
+        $('.voteInput:nth-of-type(2)').placeholder = '';
     } else { alert('Maximum number of options is 9.') }
 });
 
@@ -38,34 +40,44 @@ $('#remove_option').addEventListener('click', (event) => {
     if ($$('.voteInput').length === 3) {
         $('.voteInput:last-of-type').remove();
         event.target.style = 'display: none !important';
+        $('.voteInput:first-of-type').placeholder = 'Yes';
+        $('.voteInput:nth-of-type(2)').placeholder = 'No';
     }
     if ($$('.voteInput').length > 2) {
         $('.voteInput:last-of-type').remove();
     }
 });
 
-$$('.vote-btn').forEach(el => {
-    el.addEventListener('click', (e) => {
-        console.log('I am in!'); //////////////// Not working? possibly because the buttons are dynamically generate, move this into a function and call it in template JS
-        let obj = {}
-        obj.id = parseInt(e.target.id);
-        obj.vote = $('#post-' + obj.id + ' input[name="post' + obj.id + 'options"]:checked').value;
-        const stringifiedObj = JSON.stringify(obj);
+const voteBTN = () => {
+    $$('.vote-btn').forEach(el => {
+        el.addEventListener('click', (e) => {
+            let obj = {}
+            const arr = e.target.id.split('-')
+            const num = arr.at(-1);
+            obj.id = num;
+            obj.vote = $('input[name="post-' + num + '-options"]:checked').value;
+            const stringifiedObj = JSON.stringify(obj);
 
-        fetch(url + '/vote', {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: stringifiedObj
-        }).then(response => {
-            return response.json();
-        }).then(data => {
-            console.log('Voted for option ' + obj.id)
-        })
+            fetch(url + '/vote', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: stringifiedObj
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                location.reload();
+                // HOW DO YOU KNOW IF THE USER VOTED TO DISABLE VOTING FOR THIS POST FOR THAT USER?
+                // change file structure, create separate file for each users and add arrays to each user
+                // one array with the post ID for posts he created, one with posts he already voted on with 2 keys, post ID and option chosen
+                // etc
+            })
+        });
     });
-});
+}
+
 
 $('#post-item').addEventListener('change', (event) => {
     postType = $('input[name="type"]:checked').value;
@@ -137,7 +149,7 @@ $('#post-item').addEventListener('submit', (event) => {
         postData.image = $('#image').value;
         postData.description = $('#description').value;
         postType === 'poll' ? postData.options = pollOptions : postData.options = ['Yes', 'No'];
-        postData.tags = 'tag1, tag5';
+        postData.tags = $('#tags-input').value;
         postData.type = $('input[name="type"]:checked').value;
         postData.votes = votes;
         let strPostData = JSON.stringify(postData);
@@ -184,6 +196,7 @@ const getItems = () => {
                 const html = new HTML;
                 $('#items').innerHTML += html.insertHTML(item);
                 makeChart(data);
+                voteBTN();
 
                 // EDIT FUNCTIONALITY
                 $$('.edit').forEach(element => {
@@ -198,8 +211,9 @@ const getItems = () => {
                 $$('.delete').forEach(element => {
                     element.addEventListener('click', (event) => {
                         // get the id (title) of the clicked item
-                        element.id = event.target.id;
-                        deleteItem(element.id)
+                        const arr = event.target.id.split('-')
+                        const id = arr.at(-1);
+                        deleteItem(id)
                     });
                 });
             });
@@ -259,19 +273,19 @@ vote();
 //     }
 // }
 
-const deleteItem = (itemTitle) => {
+const deleteItem = (id) => {
     // Fetches all data from items.json
     const promptString = prompt('Are you sure you want to delete this post?', 'YES');
     if (promptString != null && promptString === 'YES') {
-        const correctItem = fetchedItems.find(item => item.title === itemTitle);
-        let strCorrectItem = JSON.stringify(correctItem);
+        //const correctItem = fetchedItems.find(item => item.title === itemTitle);
+        let deleteID = JSON.stringify({ "id": id });
         fetch(url + '/delete', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: strCorrectItem
+            body: deleteID
         })
             .then(response => {
                 return response.json();

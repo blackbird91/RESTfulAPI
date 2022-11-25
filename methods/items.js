@@ -38,40 +38,17 @@ module.exports = class Item {
     });
   }
 
-  vote() {
+  static vote(obj) {
     fs.readFile(p, (err, fileContent) => {
       let items = [];
       if (!err) {
         items = JSON.parse(fileContent);
       }
-      console.log(fileContent)
-    });
-  }
-
-  static fetchAll(cb) {
-    fs.readFile(p, (err, fileContent) => {
-      if (err) {
-        cb([]);
-      }
-      cb(JSON.parse(fileContent));
-    });
-  }
-
-  static fetchById(itemId) {
-    fs.readFile(p, (err, fileContent) => {
-      if (err) {
-        cb([]);
-      }
-      cb(JSON.parse(fileContent));
-    });
-  }
-
-  static deleteByTitle(title) {
-    Item.fetchAll(items => {
-      const updatedItems = items.filter(item => item.title !== title);
-      fs.writeFileSync(p, JSON.stringify(updatedItems), err => {
-        console.log(err)
-      });
+      // items.filter(item => item.title !== title); // need to filter, because the ID might not be the same as the index if someone deletes an item there will be a gap
+      // items[obj.id - 1].votes[obj.vote] += 1;
+      // fs.writeFile(p, JSON.stringify(items), err => {
+      //   console.log(err);
+      // });
     });
   }
 };

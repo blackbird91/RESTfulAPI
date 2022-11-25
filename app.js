@@ -3,7 +3,8 @@ const express = require('express');
 const Joi = require('joi');
 const fs = require('fs');
 
-const Item = require('./models/items');
+const Item = require('./methods/items');
+const { max } = require('joi/lib/types/array');
 
 const app = express();
 
@@ -54,10 +55,11 @@ app.post('/post', (req, res) => {
     tags: Joi.string().required(),
     type: Joi.string().required(),
     votes: Joi.array().required(),
-    vote: Joi.number()
+    vote: Joi.number().integer().max(9).precision(0)
   }
 
   const { error } = Joi.validate(req.body, schema)
+
   if (error) {
     res.status(401).send(error.details[0].message)
     return
@@ -70,13 +72,14 @@ app.post('/post', (req, res) => {
 });
 
 app.post('/vote', (req, res) => {
-  console.log('first');
   // Joi Schema = how the incoming input data is validated
   const schema = {
-    vote: Joi.number()
+    id: Joi.number().integer().max(2300000).precision(0).required(),
+    vote: Joi.number().integer().max(9).precision(0).required()
   }
 
   const { error } = Joi.validate(req.body, schema)
+
   if (error) {
     res.status(401).send(error.details[0].message)
     return
@@ -84,19 +87,15 @@ app.post('/vote', (req, res) => {
     res.send({ "status": 200 })
   }
 
-  const item = new Item(req.body);
-  item.vote();
+  Item.vote(req.body);
 });
 
 // HERE WE HAVE TO CHECK IF THE USER THAT MADE THE POST IS AUTHENTICATED !!!!!!!!!!!!!!!!
+///////////////////////////////////////////////////
 app.put('/delete', (req, res) => {
-  const correctItem = req.body
-  Item.fetchAll(items => {
-    let filteredItems = items.filter(item => item.title !== correctItem.title)
-    let data = JSON.parse(fs.readFileSync('data/items.json'));
-    data = filteredItems
-    fs.writeFileSync('data/items.json', JSON.stringify(data))
-  })
+  const data = JSON.parse(fs.readFileSync('data/items.json'));
+  const filteredItems = data.filter(item => item.id != req.body.id)
+  fs.writeFileSync('data/items.json', JSON.stringify(filteredItems))
   res.send({ "status": 200 })
 })
 

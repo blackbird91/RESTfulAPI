@@ -36,7 +36,7 @@ export class HTML {
                             <span class="${data.type} item-type">${data.type}</span> <img class="avatar" src="/img/cade.jpg" /> <strong>@decryptr</strong> | <span class="date" id="date">` + formatDate(data.date) + `</span>
                             <span id="countdown"> | <img class="clock" src="/svgs/clock.svg" alt="clock" />`+ countdown(data.date) + ` d:h</span>
                             <span class="actions">
-                                <button id="${data.title}" class="delete"></button>
+                                <button id="delete-${data.id}" class="delete"></button>
                             </span>
                         </div>
                         <a class="title ${data.type}" href="${linkTitle}"><h2>${data.title}</h2></a>
