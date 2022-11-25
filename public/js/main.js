@@ -74,22 +74,17 @@ $('#post-item').addEventListener('change', (event) => {
         pollOptions.push(el.value);
     });
     if ($('input[name="type"]:checked').value === 'poll') {
-        $('#description-container').style.display = 'none';
-        $('#description').required = false;
         $('.options').style = '';
         $('#add-remove-inputs').style = 'display: block';
         $$('.voteInput').forEach((el, i) => {
             el.required = true;
             if (i === 0) {
-                el.focus();
                 el.placeholder = 'Yes'
             } else {
                 el.placeholder = 'No';
             }
         });
     } else {
-        $('#description-container').style.display = 'block';
-        $('#description').required = true;
         $('.options').style = 'display: none';
         $('#add-remove-inputs').style = '';
         $$('.voteInput').forEach((el, i) => {
