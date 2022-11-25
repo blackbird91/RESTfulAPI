@@ -9,6 +9,7 @@ const p = path.join(
 
 module.exports = class Item {
   constructor(itemData) {
+    this.id = 0;
     this.user = itemData.user;
     this.title = itemData.title;
     this.image = itemData.image;
@@ -28,6 +29,8 @@ module.exports = class Item {
       if (!err) {
         items = JSON.parse(fileContent);
       }
+      const id = items.length + 1;
+      this.id = id;
       items.push(this);
       fs.writeFile(p, JSON.stringify(items), err => {
         console.log(err);

@@ -80,7 +80,12 @@ $('#post-item').addEventListener('change', (event) => {
         $('#add-remove-inputs').style = 'display: block';
         $$('.voteInput').forEach((el, i) => {
             el.required = true;
-            el.placeholder = '';
+            if (i === 0) {
+                el.focus();
+                el.placeholder = 'Yes'
+            } else {
+                el.placeholder = 'No';
+            }
         });
     } else {
         $('#description-container').style.display = 'block';
@@ -89,12 +94,13 @@ $('#post-item').addEventListener('change', (event) => {
         $('#add-remove-inputs').style = '';
         $$('.voteInput').forEach((el, i) => {
             el.required = false;
-            i === 0 ? el.placeholder = 'Yes' : el.placeholder = 'No';
+            el.placeholder = '';
         });
     }
 
-    let theFile = event.target.files[0];
-    console.log(theFile);
+    let theFile;
+    event.target.files ? theFile = event.target.files[0] : null;
+    //console.log(theFile);
 
     // if (checkFileProperties(theFile)) {
     //     handleUploadedFile(theFile);
@@ -135,12 +141,10 @@ $('#post-item').addEventListener('submit', (event) => {
         postData.title = $('#title').value;
         postData.image = $('#image').value;
         postData.description = $('#description').value;
-        postType === 'poll' ? postData.options = pollOptions : null;
+        postType === 'poll' ? postData.options = pollOptions : postData.options = ['Yes', 'No'];
         postData.tags = 'tag1, tag5';
         postData.type = $('input[name="type"]:checked').value;
         postData.votes = votes;
-        console.log(votes);
-        console.log(postData);
         let strPostData = JSON.stringify(postData);
 
         // Sends post request to /post with all input information

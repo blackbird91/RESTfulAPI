@@ -50,6 +50,7 @@ app.post('/post', (req, res) => {
     title: Joi.string().min(5).required(),
     image: Joi.string().required(),
     description: Joi.string().min(2).max(500).required(),
+    options: Joi.array().required(),
     tags: Joi.string().required(),
     type: Joi.string().required(),
     votes: Joi.array().required(),
