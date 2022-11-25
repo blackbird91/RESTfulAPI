@@ -55,7 +55,12 @@ const voteBTN = () => {
             const arr = e.target.id.split('-')
             const num = arr.at(-1);
             obj.id = num;
-            obj.vote = $('input[name="post-' + num + '-options"]:checked').value;
+            obj.user = user;
+            if ($('input[name="post-' + num + '-options"]').checked) {
+                obj.vote = $('input[name="post-' + num + '-options"]:checked').value;
+            } else {
+                alert('You have to select an option to vote.')
+            }
             const stringifiedObj = JSON.stringify(obj);
 
             fetch(url + '/vote', {
@@ -232,47 +237,6 @@ const vote = () => {
 
 vote();
 
-// const editItems = (elementId) => {
-//     // Fetch all data once you have the correct item
-
-//     // Find the item in the data
-//     let correctItem = fetchedItems.find(item => item.title === elementId)
-//     // Grab the edited input fields from the user
-//     correctItem.title = $('#title').value;
-//     correctItem.description = $('#description').value;
-//     correctItem.type = $('input[name="type"]:checked').value;
-//     if (isEditing) {
-//         // Listen for a edit-item submit event
-//         $('.edit-item').addEventListener('submit', (event) => {
-//             // Change the edited items values 
-//             correctItem.id = elementId;
-//             correctItem.title = $('#title').value;
-//             correctItem.image = $('#image').value;
-//             correctItem.description = $('#description').value;
-//             correctItem.type = $('#type').value;
-
-//             let strEditedItem = JSON.stringify(correctItem)
-//             // Send a post request to /edit with the correct/updated data
-//             fetch(url + '/edit', {
-//                 method: "POST",
-//                 headers: {
-//                     'Accept': 'application/json',
-//                     'Content-Type': 'application/json'
-//                 },
-//                 body: strEditedItem
-//             }).then(response => {
-//                 return response.json();
-//             })
-//                 .then(data => {
-//                     console.log(data.status === 200);
-//                 })
-//                 .catch(err => {
-//                     console.log('editItem error', err);
-//                 })
-//         });
-//     }
-// }
-
 const deleteItem = (id) => {
     // Fetches all data from items.json
     const promptString = prompt('Are you sure you want to delete this post?', 'YES');
@@ -302,35 +266,3 @@ const deleteItem = (id) => {
 
     }
 }
-
-// HANDLING IMAGE UPLOAD
-
-
-function checkFileProperties(theFile) {
-    if (theFile.type !== "image/png" && theFile.type !== "image/jpeg") {
-        console.log('File type mismatch');
-        return false;
-    }
-
-    if (theFile.size > 500000) {
-        console.log('File too large');
-        return false;
-    }
-
-    return true;
-
-}
-
-function handleUploadedFile(file) {
-    $('#image-label').innerHTML = '';
-    fileName = file.name;
-    var img = document.createElement("img");
-    img.setAttribute('id', 'theImageTag');
-    img.file = file;
-    $('#image-label').appendChild(img);
-
-    var reader = new FileReader();
-    reader.onload = (function (aImg) { return function (e) { aImg.src = e.target.result; }; })(img);
-    reader.readAsDataURL(file);
-}
-

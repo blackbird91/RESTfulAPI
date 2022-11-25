@@ -1,4 +1,5 @@
 import { $, $$ } from '/js/selectors.js';
+import { colors } from '/js/colors.js';
 
 export let makeChart = (posts) => {
     const ctx = $$('.myChart');
@@ -15,7 +16,7 @@ export let makeChart = (posts) => {
                 datasets: [{
                     data: posts[index].votes,
                     borderWidth: 0,
-                    backgroundColor: ['#36a2eb', '#ff6384', '#4bc0c0', '#ff9f40', '#9966ff', '#ffcd56', '#63ff96', '#ee63ff', '#63f6ff']
+                    backgroundColor: colors
                 }]
             },
             options: {

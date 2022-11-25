@@ -75,6 +75,7 @@ app.post('/vote', (req, res) => {
   // Joi Schema = how the incoming input data is validated
   const schema = {
     id: Joi.number().integer().max(2300000).precision(0).required(),
+    user: Joi.string().min(6).max(12).required(),
     vote: Joi.number().integer().max(9).precision(0).required()
   }
 

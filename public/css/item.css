@@ -75,6 +75,51 @@
     font-weight: bold;
 }
 
+.description ol li * {
+    cursor: pointer
+}
+
+.description ol label {
+    transition: 0.23s color
+}
+
+.description ol li:nth-of-type(1):hover * {
+    color: #36a2eb
+}
+
+.description ol li:nth-of-type(2):hover * {
+    color: #ff6384
+}
+
+.description ol li:nth-of-type(3):hover * {
+    color: #ff9f40
+}
+
+.description ol li:nth-of-type(4):hover * {
+    color: #4bc0c0
+}
+
+.description ol li:nth-of-type(5):hover * {
+    color: #9966ff
+}
+
+.description ol li:nth-of-type(6):hover * {
+    color: #ffcd56
+}
+
+.description ol li:nth-of-type(7):hover * {
+    color: #63ff96
+}
+
+.description ol li:nth-of-type(8):hover * {
+    color: #ee63ff
+}
+
+.description ol li:nth-of-type(9):hover * {
+    color: #63f6ff
+}
+
+
 .proposal {
     border-color: #0274f9 !important;
     color: #0274f9 !important

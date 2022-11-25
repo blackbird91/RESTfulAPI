@@ -39,12 +39,15 @@ module.exports = class Item {
   }
 
   static vote(obj) {
-    fs.readFile(p, (err, fileContent) => {
+    fs.readFile('data/users/' + obj.user + '.json', (err, fileContent) => {
       let items = [];
       if (!err) {
         items = JSON.parse(fileContent);
       }
-      // items.filter(item => item.title !== title); // need to filter, because the ID might not be the same as the index if someone deletes an item there will be a gap
+      console.log(items)
+      // items.filter((item, index) => {
+      //   item.id == obj.id
+      // });
       // items[obj.id - 1].votes[obj.vote] += 1;
       // fs.writeFile(p, JSON.stringify(items), err => {
       //   console.log(err);
