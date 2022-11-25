@@ -9,7 +9,7 @@ let postData = {}
 let isEditing = false;
 let fetchedItems = new Object();
 let postType;
-let allPollOptions = []
+let pollOptions = []
 
 
 let fetchURL = url + '/items';
@@ -44,11 +44,34 @@ $('#remove_option').addEventListener('click', (event) => {
     }
 });
 
+$$('.vote-btn').forEach(el => {
+    el.addEventListener('click', (e) => {
+        console.log('I am in!'); //////////////// Not working? possibly because the buttons are dynamically generate, move this into a function and call it in template JS
+        let obj = {}
+        obj.id = parseInt(e.target.id);
+        obj.vote = $('#post-' + obj.id + ' input[name="post' + obj.id + 'options"]:checked').value;
+        const stringifiedObj = JSON.stringify(obj);
+
+        fetch(url + '/vote', {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: stringifiedObj
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            console.log('Voted for option ' + obj.id)
+        })
+    });
+});
+
 $('#post-item').addEventListener('change', (event) => {
     postType = $('input[name="type"]:checked').value;
-    allPollOptions = [];
+    pollOptions = [];
     $$('.voteInput').forEach((el, i) => {
-        allPollOptions.push(el.value);
+        pollOptions.push(el.value);
     });
     if ($('input[name="type"]:checked').value === 'poll') {
         $('#description-container').style.display = 'none';
@@ -67,6 +90,13 @@ $('#post-item').addEventListener('change', (event) => {
             el.required = false;
         });
     }
+
+    let theFile = event.target.files[0];
+    console.log(theFile);
+
+    // if (checkFileProperties(theFile)) {
+    //     handleUploadedFile(theFile);
+    // }
 });
 
 // Add items to the data array in items.json
@@ -102,10 +132,12 @@ $('#post-item').addEventListener('submit', (event) => {
         postData.user = user;
         postData.title = $('#title').value;
         postData.image = $('#image').value;
-        postType === 'poll' ? postData.description = allPollOptions : postData.description = $('#description').value
+        postData.description = $('#description').value;
+        postType === 'poll' ? postData.options = pollOptions : null;
         postData.tags = 'tag1, tag5';
         postData.type = $('input[name="type"]:checked').value;
         postData.votes = votes;
+        console.log(votes);
         console.log(postData);
         let strPostData = JSON.stringify(postData);
 
@@ -130,7 +162,7 @@ $('#post-item').addEventListener('submit', (event) => {
                 $('body').style.overflow = '';
             }
 
-        })
+        });
     }
 });
 
@@ -228,64 +260,62 @@ vote();
 
 const deleteItem = (itemTitle) => {
     // Fetches all data from items.json
-    const correctItem = fetchedItems.find(item => item.title === itemTitle);
-    let strCorrectItem = JSON.stringify(correctItem);
-    fetch(url + '/delete', {
-        method: 'PUT',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: strCorrectItem
-    })
-        .then(response => {
-            return response.json();
+    const promptString = prompt('Are you sure you want to delete this post?', 'YES');
+    if (promptString != null && promptString === 'YES') {
+        const correctItem = fetchedItems.find(item => item.title === itemTitle);
+        let strCorrectItem = JSON.stringify(correctItem);
+        fetch(url + '/delete', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: strCorrectItem
         })
-        .then(data => {
-            if (data.status === 200) {
-                getItems()
-            }
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 200) {
+                    getItems()
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    } else {
+
+    }
 }
 
 // HANDLING IMAGE UPLOAD
 
-// $('#post-item').addEventListener('change', (e) => {
-//     let theFile = e.target.files[0];
 
-//     if (checkFileProperties(theFile)) {
-//         handleUploadedFile(theFile);
-//     }
+function checkFileProperties(theFile) {
+    if (theFile.type !== "image/png" && theFile.type !== "image/jpeg") {
+        console.log('File type mismatch');
+        return false;
+    }
 
-// });
+    if (theFile.size > 500000) {
+        console.log('File too large');
+        return false;
+    }
 
-// function checkFileProperties(theFile) {
-//     if (theFile.type !== "image/png" && theFile.type !== "image/jpeg") {
-//         console.log('File type mismatch');
-//         return false;
-//     }
+    return true;
 
-//     if (theFile.size > 500000) {
-//         console.log('File too large');
-//         return false;
-//     }
+}
 
-//     return true;
+function handleUploadedFile(file) {
+    $('#image-label').innerHTML = '';
+    fileName = file.name;
+    var img = document.createElement("img");
+    img.setAttribute('id', 'theImageTag');
+    img.file = file;
+    $('#image-label').appendChild(img);
 
-// }
+    var reader = new FileReader();
+    reader.onload = (function (aImg) { return function (e) { aImg.src = e.target.result; }; })(img);
+    reader.readAsDataURL(file);
+}
 
-// function handleUploadedFile(file) {
-//     $('#image-label').innerHTML = '';
-//     fileName = file.name;
-//     var img = document.createElement("img");
-//     img.setAttribute('id', 'theImageTag');
-//     img.file = file;
-//     $('#image-label').appendChild(img);
-
-//     var reader = new FileReader();
-//     reader.onload = (function (aImg) { return function (e) { aImg.src = e.target.result; }; })(img);
-//     reader.readAsDataURL(file);
-// }

@@ -13,10 +13,12 @@ module.exports = class Item {
     this.title = itemData.title;
     this.image = itemData.image;
     this.description = itemData.description;
+    this.options = itemData.options;
     this.date = new Date();
-    this.tags = 'tag1, tag2';
+    this.tags = itemData.tags;
     this.type = itemData.type;
-    this.votes = [1, 3];
+    this.votes = itemData.votes;
+    this.vote = itemData.vote;
     this.members = 10;
   }
 
@@ -30,6 +32,16 @@ module.exports = class Item {
       fs.writeFile(p, JSON.stringify(items), err => {
         console.log(err);
       });
+    });
+  }
+
+  vote() {
+    fs.readFile(p, (err, fileContent) => {
+      let items = [];
+      if (!err) {
+        items = JSON.parse(fileContent);
+      }
+      console.log(fileContent)
     });
   }
 

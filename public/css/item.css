@@ -90,6 +90,18 @@
     color: #00cf1c !important
 }
 
+.proposal-bg {
+    background-color: #0274f9 !important;
+}
+
+.issue-bg {
+    background-color: #f90202 !important;
+}
+
+.poll-bg {
+    background-color: #00cf1c !important;
+}
+
 .item .image {
     max-height: 230px;
 }
@@ -171,7 +183,7 @@
     height: 230px;
     display: flex;
     align-content: center;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
 }
 
@@ -202,4 +214,24 @@
 
 .voting .flex-column span {
     font-size: 12px
+}
+
+canvas {
+    cursor: pointer;
+}
+
+.vote-btn {
+    position: absolute;
+    display: inline-block;
+    background: #0274f9;
+    color: #ffffff;
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 51%;
+    font-size: 16px;
+    transition: 0.23s transform
+}
+
+.vote-btn:hover {
+    transform: scale(2.3)
 }
