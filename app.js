@@ -1,108 +1,121 @@
-const path = require('path');
-const express = require('express');
-const Joi = require('joi');
-const fs = require('fs');
+const path = require("path");
+const express = require("express");
+const multer = require("multer");
+const Joi = require("joi");
+const fs = require("fs");
 
-//const Item = require('./models/items');
+const Item = require("./methods/items");
+const { max } = require("joi/lib/types/array");
+
+
+let storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads')
+  },
+  filename: function (req, file, cb) {
+    let extArray = file.mimetype.split("/");
+    let extension = extArray[extArray.length - 1];
+    cb(null, file.fieldname + '-' + Date.now()+ '.' +extension)
+  }
+})
+const upload = multer({ storage: storage })
+
 
 const app = express();
 
-
 // express.json to decifer json data from incoming requests
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
 
-// GETs all data from items.json file 
-app.get('/items/:post/:tag', (req, res) => {
-  if (req.params.post) {
+app.use(express.static(path.join(__dirname, "public")));
 
-  }
+// GETs all data from items.json file
+app.get("/items", (req, res) => {
+  //if (req.params.parameter) {
+  // do this
+  //   if (req.params.parameter === 'tag') {
 
-  let data = JSON.parse(fs.readFileSync('data/items.json'));
+  //   }
+
+  //   if (req.params.parameter === 'proposal') {
+
+  //   }
+
+  //   if (req.params.parameter === 'poll') {
+
+  //   }
+
+  //   if (req.params.parameter === 'issue') {
+
+  //   }
+
+  // } else {
+  //   let data = JSON.parse(fs.readFileSync('data/items.json'));
+  //   res.send(data);
+  // }
+  let data = JSON.parse(fs.readFileSync("data/items.json"));
   res.send(data);
 });
 
 // POSTs items to the items.json file
 // IF THERE IS NO AUTHENTICATED USER THE ADD BUTTON WILL NOT BE SHOWN !!!!!!!!!!!!!!!!
-app.post('/post', (req, res) => {
-  // Schema = how the incoming input data is validated
+app.post("/post", upload.single("image"), (req, res) => {
+  console.log(req.file, req.body);
+
+  // const { image } = req.files || {};
+  // Joi Schema = how the incoming input data is validated
   const schema = {
-    user: Joi.string().min(3).required(),
+    user: Joi.string().min(6).max(12).required(),
     title: Joi.string().min(5).required(),
-    image: Joi.string().required(),
     description: Joi.string().min(2).max(500).required(),
+    options: Joi.array().required(),
     tags: Joi.string().required(),
-    type: Joi.string().required()
-  }
-
-  const { error } = Joi.validate(req.body, schema)
-  if (error) {
-    res.status(401).send(error.details[0].message)
-    return
-  } else {
-    res.send({ "status": 200 })
-  }
-  // Calling imported Item model to use the save method 
-  // and save the new incoming item post request
-  const item = new Item(req.body);
-  item.save();
-})
-
-// EDIT items in the items.json file
-// HERE WE HAVE TO CHECK IF THE USER THAT MADE THE POST IS AUTHENTICATED !!!!!!!!!!!!!!!!
-app.post('/edit', (req, res) => {
-  // Grab necessary data from the incoming request body
-  const itemId = req.body.id
-  const updatedTitle = req.body.title
-  const updatedImage = req.body.image
-  const updatedDescription = req.body.description
-  // Validate the incoming request input values with the schema
-  const schema = {
-    id: Joi.string().required(),
-    user: Joi.string().min(6).max(12).alphanum().required(),
-    title: Joi.string().min(5).required(),
-    image: Joi.string().required(),
-    description: Joi.string().min(2).max(500).required(),
     type: Joi.string().required(),
-    date: Joi.string(),
-    tags: Joi.string(),
-    votes: Joi.array(),
-    members: Joi.number(),
+    votes: Joi.array().required(),
+    vote: Joi.number().integer().max(9).precision(0),
+  };
+
+  const { error } = Joi.validate(req.body, schema);
+
+  if (error) {
+    res.status(401).send(error.details[0].message);
+    return;
+  } else {
+    res.send({ status: 200 });
+  }
+  // console.log(res);
+
+  const item = new Item({ ...req.body, ...req.file });
+  item.save();
+});
+
+app.post("/vote", (req, res) => {
+  // Joi Schema = how the incoming input data is validated
+  const schema = {
+    id: Joi.number().integer().max(2300000).precision(0).required(),
+    user: Joi.string().min(6).max(12).required(),
+    vote: Joi.number().integer().max(9).precision(0).required()
   }
 
-  const { error } = Joi.validate(req.body, schema)
+  const { error } = Joi.validate(req.body, schema);
+
   if (error) {
-    return res.status(401).send(error)
+    res.status(401).send(error.details[0].message);
+    return;
   } else {
-    // If no errors, fetch the edited item from items.json, update the 
-    // edited values and then writeFileSync the data back into the items.json file
-    Item.fetchAll(items => {
-      let correctItemIndex = items.indexOf(items.find(item => item.title === itemId))
-      let data = JSON.parse(fs.readFileSync('data/items.json'));
-      data[correctItemIndex].title = updatedTitle
-      data[correctItemIndex].image = updatedImage
-      data[correctItemIndex].description = updatedDescription
-      fs.writeFileSync('data/items.json', JSON.stringify(data))
-    })
+    res.send({ status: 200 });
   }
-  res.send({ "status": 200 })
-})
+
+  Item.vote(req.body);
+});
 
 // HERE WE HAVE TO CHECK IF THE USER THAT MADE THE POST IS AUTHENTICATED !!!!!!!!!!!!!!!!
-app.put('/delete', (req, res) => {
-  const correctItem = req.body
-  Item.fetchAll(items => {
-    let filteredItems = items.filter(item => item.title !== correctItem.title)
-    let data = JSON.parse(fs.readFileSync('data/items.json'));
-    data = filteredItems
-    fs.writeFileSync('data/items.json', JSON.stringify(data))
-  })
-  res.send({ "status": 200 })
-})
-
-// GETs the main homepage where all items are displayed from the index.js file
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/index.html'));
-// })
+///////////////////////////////////////////////////
+app.put("/delete", (req, res) => {
+  const data = JSON.parse(fs.readFileSync("data/items.json"));
+  const filteredItems = data.filter((item) => item.id != req.body.id);
+  fs.writeFileSync("data/items.json", JSON.stringify(filteredItems));
+  res.send({ status: 200 });
+});
 
 app.listen(3333);

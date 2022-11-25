@@ -1,141 +1,144 @@
 
-let link = undefined;
-let session = undefined;
-let accountData = undefined;
+// let link = undefined;
+// let session = undefined;
+// let accountData = undefined;
 
-const appIdentifier = "Shield Login"
-const chainId = "384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0"
-const endpoints = ["https://proton.greymass.com"]
+export const user = 'decryptr';
+export const url = 'http://127.0.0.1:3333';
 
-const loginButton = document.querySelector('#login-button')
-const avatar = document.querySelector('#avatar')
-const avatarName = document.querySelector('#avatar-name')
-const username = document.querySelector('#username')
-const toInput = document.querySelector('#to-input')
-const amountInput = document.querySelector('#amount-input')
-const logoutIcon = document.querySelector('#logout-button')
-const transferFormContainer = document.querySelector('#transferFormContainer')
-const transferButton = document.querySelector('#transfer-button')
+// const appIdentifier = "Shield Login"
+// const chainId = "384da888112027f0321850a169f737c33e53b388aad48b5adace4bab97f437e0"
+// const endpoints = ["https://proton.greymass.com"]
 
-const userId = 'decryptr'
-const contractName = 'grat'
-const token = 'GRAT'
+// const loginButton = document.querySelector('#login-button')
+// const avatar = document.querySelector('#avatar')
+// const avatarName = document.querySelector('#avatar-name')
+// const username = document.querySelector('#username')
+// const toInput = document.querySelector('#to-input')
+// const amountInput = document.querySelector('#amount-input')
+// //const logoutIcon = document.querySelector('#logout-button')
+// const transferFormContainer = document.querySelector('#transferFormContainer')
+// const transferButton = document.querySelector('#transfer-button')
 
-// Status is updated once a user is logged in
-const updateStatus = () => {
+// const userId = 'decryptr'
+// const contractName = 'grat'
+// const token = 'GRAT'
 
-  // Session and session.auth are automatically returned when a user logs in
-  // here we use that to determing what UI we display
-  if (session && session.auth) {
-    avatarName.textContent = session.auth.actor.toString()
-    username.textContent = session.auth.actor.toString()
-    loginButton.style.display = "none"
-    avatar.style.display = "block"
-    logoutIcon.style.display = "block"
-    transferFormContainer.style.display = "block"
-  } else {
-    avatarName.textContent = ""
-    loginButton.style.display = "block"
-    avatar.style.display = "none"
-    logoutIcon.style.display = "none"
-    transferFormContainer.style.display = "none"
-  }
-}
+// // Status is updated once a user is logged in
+// const updateStatus = () => {
 
-// Login in function that is called when the login button is clicked
-const login = async (restoreSession) => {
-  const { link: localLink, session: localSession } = await ProtonWebSDK({
-    // linkOptions is a required part of logging in with the protonWebSDK(), within
-    // the options, you must have the chain API endpoint array, a chainID that matches the chain your API 
-    // endpoint is on, and restoreSession option that is passed to determine if there is 
-    // an existing session that needs to be saved or if a new session needs to be created.
-    linkOptions: {
-      endpoints,
-      chainId,
-      restoreSession,
-    },
-    // The account that is requesting the transaction with the client
-    transportOptions: {
-      requestAccount: appIdentifier
-    },
-    // This is the wallet selector style options available
-    selectorOptions: {
-      appName: "Shield",
-      appLogo: "/svgs/SHIELD-logo.svg",
-      customStyleOptions: {
-        modalBackgroundColor: "#F4F7FA",
-        logoBackgroundColor: "white",
-        isLogoRound: true,
-        optionBackgroundColor: "white",
-        optionFontColor: "black",
-        primaryFontColor: "black",
-        secondaryFontColor: "#6B727F",
-        linkColor: "#752EEB"
-      }
-    }
-  })
+//   // Session and session.auth are automatically returned when a user logs in
+//   // here we use that to determing what UI we display
+//   if (session && session.auth) {
+//     avatarName.textContent = session.auth.actor.toString()
+//     username.textContent = session.auth.actor.toString()
+//     loginButton.style.display = "none"
+//     avatar.style.display = "block"
+//     logoutIcon.style.display = "block"
+//     transferFormContainer.style.display = "block"
+//   } else {
+//     avatarName.textContent = ""
+//     loginButton.style.display = "block"
+//     avatar.style.display = "none"
+//     logoutIcon.style.display = "none"
+//     transferFormContainer.style.display = "none"
+//   }
+// }
 
-  link = localLink
-  session = localSession
-  console.log(link, session)
+// // Login in function that is called when the login button is clicked
+// const login = async (restoreSession) => {
+//   const { link: localLink, session: localSession } = await ProtonWebSDK({
+//     // linkOptions is a required part of logging in with the protonWebSDK(), within
+//     // the options, you must have the chain API endpoint array, a chainID that matches the chain your API
+//     // endpoint is on, and restoreSession option that is passed to determine if there is
+//     // an existing session that needs to be saved or if a new session needs to be created.
+//     linkOptions: {
+//       endpoints,
+//       chainId,
+//       restoreSession,
+//     },
+//     // The account that is requesting the transaction with the client
+//     transportOptions: {
+//       requestAccount: appIdentifier
+//     },
+//     // This is the wallet selector style options available
+//     selectorOptions: {
+//       appName: "Shield",
+//       appLogo: "/svgs/SHIELD-logo.svg",
+//       customStyleOptions: {
+//         modalBackgroundColor: "#F4F7FA",
+//         logoBackgroundColor: "white",
+//         isLogoRound: true,
+//         optionBackgroundColor: "white",
+//         optionFontColor: "black",
+//         primaryFontColor: "black",
+//         secondaryFontColor: "#6B727F",
+//         linkColor: "#752EEB"
+//       }
+//     }
+//   })
 
-  updateStatus()
-}
+//   link = localLink
+//   session = localSession
+//   console.log(link, session)
 
-// Logout function sets the link and session back to original state of undefined
-const logout = async () => {
-  if (link && session) {
-    await link.removeSession(appIdentifier, session.auth, chainId);
-  }
-  session = undefined;
-  link = undefined;
+//   updateStatus()
+// }
 
-  updateStatus()
-}
+// // Logout function sets the link and session back to original state of undefined
+// const logout = async () => {
+//   if (link && session) {
+//     await link.removeSession(appIdentifier, session.auth, chainId);
+//   }
+//   session = undefined;
+//   link = undefined;
 
-// Transfer functionality
-const transfer = async ({ to, amount }) => {
-  if (!session) {
-    throw new Error('No Session');
-  }
+//   updateStatus()
+// }
 
-  return await session.transact({
-    actions: [{
+// // Transfer functionality
+// const transfer = async ({ to, amount }) => {
+//   if (!session) {
+//     throw new Error('No Session');
+//   }
 
-      // Token contract
-      account: "grat",
+//   return await session.transact({
+//     actions: [{
 
-      // Action name
-      name: "transfer",
+//       // Token contract
+//       account: "grat",
 
-      // Action parameters
-      data: {
-        // Sender
-        from: session.auth.actor,
+//       // Action name
+//       name: "transfer",
 
-        // Receiver
-        to: to,
+//       // Action parameters
+//       data: {
+//         // Sender
+//         from: session.auth.actor,
 
-        // 8 is precision (how many decimals places the token allows), GRAT is symbol
-        quantity: `${(+amount).toFixed(8)} GRAT`,
+//         // Receiver
+//         to: to,
 
-        // Optional memo
-        memo: "Testing transactions from the API"
-      },
-      authorization: [session.auth]
-    }]
-  }, {
-    broadcast: true
-  })
-}
+//         // 8 is precision (how many decimals places the token allows), GRAT is symbol
+//         quantity: `${(+amount).toFixed(8)} GRAT`,
 
-// Add button listeners
-logoutIcon.addEventListener("click", logout)
-loginButton.addEventListener("click", () => login(false))
-transferButton.addEventListener("click", () => transfer({
-  to: toInput.value,
-  amount: amountInput.value,
-}))
+//         // Optional memo
+//         memo: "Testing transactions from the API"
+//       },
+//       authorization: [session.auth]
+//     }]
+//   }, {
+//     broadcast: true
+//   })
+// }
 
-// Restore
-login(true)
+// // Add button listeners
+// logoutIcon.addEventListener("click", logout)
+// loginButton.addEventListener("click", () => login(false))
+// transferButton.addEventListener("click", () => transfer({
+//   to: toInput.value,
+//   amount: amountInput.value,
+// }))
+
+// // Restore
+// login(true)
