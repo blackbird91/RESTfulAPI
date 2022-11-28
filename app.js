@@ -5,7 +5,6 @@ const Joi = require("joi");
 const fs = require("fs");
 
 const Item = require("./methods/items");
-const { max } = require("joi/lib/types/array");
 
 
 let storage = multer.diskStorage({
@@ -15,7 +14,7 @@ let storage = multer.diskStorage({
   filename: function (req, file, cb) {
     let extArray = file.mimetype.split("/");
     let extension = extArray[extArray.length - 1];
-    cb(null, file.fieldname + '-' + Date.now()+ '.' +extension)
+    cb(null, file.fieldname + '-' + Date.now() + '.' + extension)
   }
 })
 const upload = multer({ storage: storage })

@@ -9,14 +9,17 @@ const p = path.join(
 
 module.exports = class Item {
   constructor(itemData) {
+    this.id = 0;
     this.user = itemData.user;
     this.title = itemData.title;
     this.image = itemData.image;
     this.description = itemData.description;
+    this.options = itemData.options;
     this.date = new Date();
-    this.tags = 'tag1, tag2';
+    this.tags = itemData.tags;
     this.type = itemData.type;
-    this.votes = [1, 3];
+    this.votes = itemData.votes;
+    this.vote = itemData.vote;
     this.members = 10;
   }
 

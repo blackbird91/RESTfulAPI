@@ -117,3 +117,7 @@
 #remove_option {
     background: linear-gradient(0deg, rgba(249, 2, 2, 1) 0%, rgba(249, 93, 2, 1) 100%);
 }
+
+#theImageTag {
+    max-height: 100px;
+}

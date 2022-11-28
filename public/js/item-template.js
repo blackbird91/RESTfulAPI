@@ -25,11 +25,17 @@ export class HTML {
             tagsString += '<a class="tag ' + data.type + '" href="' + url + '/?tag=' + item + '">#' + item + '</a>';
         });
 
+        // check if we have an image
+        let imageSRC;
+        if (data.image && data.image != '') {
+            imageSRC = data.image
+        } else { imageSRC = '/img/love-technology.jpg'; }
+
         return `
         <article class="item" id="post-${data.id}">
             <div class="flex">
                 <div class="flex justify-start">
-                    <a class="main-image" href="${linkTitle}" target="_blank"><img class="image" src="${data.image}" alt="${data.title}" /></a>
+                    <a class="main-image" href="${linkTitle}" target="_blank"><img class="image" src="${imageSRC}" alt="${data.title}" /></a>
 
                     <div class="content">
                         <div class="user_info">

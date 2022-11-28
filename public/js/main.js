@@ -4,10 +4,8 @@ import { user } from "/js/proton.js";
 import { url } from "/js/proton.js";
 import { makeChart } from "/js/chart.js";
 
-// here we will add all user input data
-let postData = {};
+
 let isEditing = false;
-let fetchedItems = new Object();
 let postType;
 let pollOptions = [];
 
@@ -105,19 +103,16 @@ $("#post-item").addEventListener("change", (event) => {
     });
   }
 
-  let theFile;
-  event.target.files ? (theFile = event.target.files[0]) : null;
-  console.log(theFile);
+  // let theFile = event.target.files[0];
 
-  if (checkFileProperties(theFile)) {
-    handleUploadedFile(theFile);
-  }
+  // if (checkFileProperties(theFile)) {
+  //   handleUploadedFile(theFile);
+  // }
 });
 
 // Add items to the data array in items.json
 $("#post-item").addEventListener("submit", (event) => {
   event.preventDefault();
-  postData = {};
   // If the user is NOT editing, this will check to make sure that there is NOT an
   // already existing item in the items.json file
   if (!isEditing) {
@@ -144,7 +139,7 @@ $("#post-item").addEventListener("submit", (event) => {
     }
     const formData = new FormData();
 
-    // postData object gets filled with correct input information
+
     formData.append("user", user);
     formData.append("title", $("#title").value);
     formData.append("image", $("#image").files[0]);
@@ -188,7 +183,6 @@ const getItems = () => {
       return response.json();
     })
     .then((data) => {
-      fetchedItems = data;
 
       //Takes data from files and calls the HTML template to display the data
       $("#items").innerHTML = "";
@@ -239,7 +233,6 @@ const deleteItem = (id) => {
     "YES"
   );
   if (promptString != null && promptString === "YES") {
-    //const correctItem = fetchedItems.find(item => item.title === itemTitle);
     let deleteID = JSON.stringify({ id: id });
     fetch(url + "/delete", {
       method: "PUT",
@@ -266,38 +259,41 @@ const deleteItem = (id) => {
 
 // HANDLING IMAGE UPLOAD
 
-function checkFileProperties(theFile) {
-  if (
-    theFile &&
-    theFile.type !== "image/png" &&
-    theFile.type !== "image/jpeg"
-  ) {
-    console.log("File type mismatch");
-    return false;
-  }
+// function checkFileProperties(theFile) {
+//   if (
+//     theFile &&
+//     theFile.type !== "image/png" &&
+//     theFile.type !== "image/jpeg" &&
+//     theFile.type !== "image/gif" &&
+//     theFile.type !== "image/webp" &&
+//     theFile.type !== "image/svg"
+//   ) {
+//     console.log("File type mismatch");
+//     return false;
+//   }
 
-  if (theFile.size > 500000) {
-    console.log("File too large");
-    return false;
-  }
+//   if (theFile.size > 500000) {
+//     console.log("File too large");
+//     return false;
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
-function handleUploadedFile(file) {
-  $("#image-label").innerHTML = "";
-  const fileName = file.name;
-  var img = document.createElement("img");
-  img.setAttribute("id", "theImageTag");
-  img.file = file;
-  $("#image-label").appendChild(img);
+// function handleUploadedFile(file) {
+//   $("#image-label").innerHTML = "";
+//   const fileName = file.name;
+//   var img = document.createElement("img");
+//   img.setAttribute("id", "theImageTag");
+//   img.file = file;
+//   $("#image-label").appendChild(img);
 
-  var reader = new FileReader();
-  reader.onload = (function (aImg) {
-    return function (e) {
-      aImg.src = e.target.result;
-      $("#post-item").add;
-    };
-  })(img);
-  reader.readAsDataURL(file);
-}
+//   var reader = new FileReader();
+//   reader.onload = (function (aImg) {
+//     return function (e) {
+//       aImg.src = e.target.result;
+//       $("#post-item").add;
+//     };
+//   })(img);
+//   reader.readAsDataURL(file);
+// }

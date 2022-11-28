@@ -40,6 +40,8 @@
 .main-image {
     display: block;
     text-decoration: none;
+    width: 230px;
+    height: 230px
 }
 
 .main-image img {
